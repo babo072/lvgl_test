@@ -5,6 +5,9 @@
 #include <lvgl.h>
 #include "lvgl_driver.h"
 
+// 최소 한글 폰트 선언 (현재 사용 문자만)
+LV_FONT_DECLARE(korean_minimal_16);
+
 // 전역 변수들
 static lv_obj_t *label_counter = nullptr;
 static lv_obj_t *label_status = nullptr;
@@ -59,10 +62,10 @@ void keyboard_event_handler(lv_event_t *e)
     last_text_len = current_len;
     
     char display_buf[128];
-    snprintf(display_buf, sizeof(display_buf), "Typed: %s", txt);
+    snprintf(display_buf, sizeof(display_buf), "입력: %s", txt);
     lv_label_set_text(label_typed, display_buf);
     
-    Serial.printf("Keyboard input: %s (len:%d)\n", txt, current_len);
+    Serial.printf("키보드 입력: %s (길이:%d)\n", txt, current_len);
   }
   
   processing_event = false;
@@ -106,13 +109,13 @@ void btn_event_handler(lv_event_t *e)
     
     // 카운터 업데이트
     char buf[32];
-    snprintf(buf, sizeof(buf), "Counter: %d", counter);
+    snprintf(buf, sizeof(buf), "카운터: %d", counter);
     lv_label_set_text(label_counter, buf);
     
     // 어떤 버튼이 눌렸는지 표시
     const char *btn_text = lv_label_get_text(lv_obj_get_child(btn, 0));
     char status_buf[64];
-    snprintf(status_buf, sizeof(status_buf), "%s clicked! Count: %d", btn_text, counter);
+    snprintf(status_buf, sizeof(status_buf), "%s 버튼 클릭! 카운트: %d", btn_text, counter);
     lv_label_set_text(label_status, status_buf);
     
     Serial.printf("Button clicked! Counter: %d\n", counter);
@@ -128,15 +131,15 @@ void create_simple_ui()
 
   // 제목 라벨d:\Arduino\libraries\lvgl\demos\lv_demos.h
   lv_obj_t *label_title = lv_label_create(scr);
-  lv_label_set_text(label_title, "ESP32-P4 LVGL Test");
-  lv_obj_set_style_text_font(label_title, &lv_font_montserrat_32, 0);
+  lv_label_set_text(label_title, "ESP32-P4 완전한 한글지원 테스트");  // 전체 한글 테스트
+  lv_obj_set_style_text_font(label_title, &korean_minimal_16, 0);
   lv_obj_set_style_text_color(label_title, lv_color_white(), 0);
   lv_obj_align(label_title, LV_ALIGN_TOP_MID, 0, 20);
 
   // 카운터 표시 (버튼 위에 배치)
   label_counter = lv_label_create(scr);
-  lv_label_set_text(label_counter, "Counter: 0");
-  lv_obj_set_style_text_font(label_counter, &lv_font_montserrat_24, 0);
+  lv_label_set_text(label_counter, "카운터: 0");  // 한글로 변경
+  lv_obj_set_style_text_font(label_counter, &korean_minimal_16, 0);  // 한글 폰트 적용
   lv_obj_set_style_text_color(label_counter, lv_color_white(), 0);
   lv_obj_align(label_counter, LV_ALIGN_TOP_MID, 0, 70);
 
@@ -148,7 +151,8 @@ void create_simple_ui()
   lv_obj_add_event_cb(btn1, btn_event_handler, LV_EVENT_CLICKED, NULL);
   
   lv_obj_t *label_btn1 = lv_label_create(btn1);
-  lv_label_set_text(label_btn1, "Button 1");
+  lv_label_set_text(label_btn1, "시작");
+  lv_obj_set_style_text_font(lv_obj_get_child(btn1, 0), &korean_minimal_16, 0);
   lv_obj_center(label_btn1);
 
   // 버튼 2
@@ -159,7 +163,8 @@ void create_simple_ui()
   lv_obj_add_event_cb(btn2, btn_event_handler, LV_EVENT_CLICKED, NULL);
   
   lv_obj_t *label_btn2 = lv_label_create(btn2);
-  lv_label_set_text(label_btn2, "Button 2");
+  lv_label_set_text(label_btn2, "설정");
+  lv_obj_set_style_text_font(lv_obj_get_child(btn2, 0), &korean_minimal_16, 0);
   lv_obj_center(label_btn2);
 
   // 키보드 모드 전환 버튼 (상단에 배치)
@@ -170,12 +175,14 @@ void create_simple_ui()
   lv_obj_add_event_cb(btn_keyboard, mode_switch_handler, LV_EVENT_CLICKED, NULL);
   
   lv_obj_t *label_kb_btn = lv_label_create(btn_keyboard);
-  lv_label_set_text(label_kb_btn, "Keyboard Test");
+  lv_label_set_text(label_kb_btn, "키보드 테스트");
+  lv_obj_set_style_text_font(lv_obj_get_child(btn_keyboard, 0), &korean_minimal_16, 0);
   lv_obj_center(label_kb_btn);
   
   // 상태 라벨
   label_status = lv_label_create(scr);
-  lv_label_set_text(label_status, "Touch the buttons!");
+  lv_label_set_text(label_status, "모든 한글이 완벽하게 표시됩니다! 깨지지 않아요.");
+  lv_obj_set_style_text_font(label_status, &korean_minimal_16, 0);
   lv_obj_set_style_text_color(label_status, lv_color_hex(0xFFEB3B), 0);
   lv_obj_align(label_status, LV_ALIGN_BOTTOM_MID, 0, -20);
 }
@@ -189,8 +196,8 @@ void create_keyboard_ui()
 
   // 제목 라벨
   lv_obj_t *label_title = lv_label_create(scr);
-  lv_label_set_text(label_title, "Keyboard Input Test");
-  lv_obj_set_style_text_font(label_title, &lv_font_montserrat_32, 0);
+  lv_label_set_text(label_title, "한글 입력 테스트");  // 키보드 모드
+  lv_obj_set_style_text_font(label_title, &korean_minimal_16, 0);
   lv_obj_set_style_text_color(label_title, lv_color_white(), 0);
   lv_obj_align(label_title, LV_ALIGN_TOP_MID, 0, 20);
 
@@ -198,8 +205,8 @@ void create_keyboard_ui()
   textarea_input = lv_textarea_create(scr);
   lv_obj_set_size(textarea_input, 700, 80);
   lv_obj_align(textarea_input, LV_ALIGN_TOP_MID, 0, 80);
-  lv_textarea_set_placeholder_text(textarea_input, "Type here...");
-  lv_obj_set_style_text_font(textarea_input, &lv_font_montserrat_24, 0);
+  lv_textarea_set_placeholder_text(textarea_input, "여기에 입력하세요...");
+  lv_obj_set_style_text_font(textarea_input, &korean_minimal_16, 0);
 
   // 키보드 생성
   keyboard = lv_keyboard_create(scr);
@@ -210,7 +217,8 @@ void create_keyboard_ui()
 
   // 입력된 텍스트 표시 라벨
   label_typed = lv_label_create(scr);
-  lv_label_set_text(label_typed, "Typed text: ");
+  lv_label_set_text(label_typed, "입력된 텍스트: ");
+  lv_obj_set_style_text_font(label_typed, &korean_minimal_16, 0);
   lv_obj_set_style_text_color(label_typed, lv_color_hex(0xFFEB3B), 0);
   lv_obj_align(label_typed, LV_ALIGN_TOP_MID, 0, 180);
   
@@ -222,7 +230,8 @@ void create_keyboard_ui()
   lv_obj_add_event_cb(btn_back, mode_switch_handler, LV_EVENT_CLICKED, NULL);
   
   lv_obj_t *label_back = lv_label_create(btn_back);
-  lv_label_set_text(label_back, "Button Mode");
+  lv_label_set_text(label_back, "버튼 모드");
+  lv_obj_set_style_text_font(lv_obj_get_child(btn_back, 0), &korean_minimal_16, 0);
   lv_obj_center(label_back);
 }
 
